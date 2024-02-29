@@ -1,4 +1,4 @@
-const mainDate = () => {
+const categoriesData = () => {
 	const preloder = document.querySelector('.preloder')
 
 	const renderGanreList = ganres => {
@@ -15,12 +15,12 @@ const mainDate = () => {
 	}
 
 	const renderAnimeList = (array, ganres) => {
-		const wrapper = document.querySelector('.product .col-lg-8')
+		const wrapper = document.querySelector('.product-page .col-lg-8')
 
 		ganres.forEach(ganre => {
 			const productBlock = document.createElement('div')
 			const listBlock = document.createElement('div')
-			const list = array.filter(item => item.ganre === ganre)
+			const list = array.filter(item => item.tags.includes(ganre))
 
 			listBlock.classList.add('row')
 			productBlock.classList.add('mb-5')
@@ -81,6 +81,7 @@ const mainDate = () => {
 				elem.style.backgroundImage = `url(${elem.dataset.setbg})`
 			})
 		})
+
 		setTimeout(() => {
 			preloder.classList.remove('active')
 		}, 500)
@@ -115,15 +116,22 @@ const mainDate = () => {
 		.then(respons => respons.json())
 		.then(date => {
 			const ganres = new Set()
+			const ganreParams = new URLSearchParams(window.location.search).get(
+				'ganre'
+			)
 
 			date.anime.forEach(item => {
 				ganres.add(item.ganre)
 			})
 
 			renderTopAnime(date.anime.sort((a, b) => b.views - a.views).slice(0, 5))
-			renderAnimeList(date.anime, ganres)
+			if (ganreParams) {
+				renderAnimeList(date.anime, [ganreParams])
+			} else {
+				renderAnimeList(date.anime, ganres)
+			}
 			renderGanreList(ganres)
 		})
 }
 
-mainDate()
+categoriesData()
